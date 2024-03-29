@@ -20,6 +20,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
+          name: ${{ steps.extract_branch.outputs.branch }}
+          retention-days: 30
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ./build
       
   deploy:
@@ -39,6 +42,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ needs.unit-tests.outputs.branch }}
 
       - name: Add Url as comment
         id: comment_to_pr
