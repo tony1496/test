@@ -18,7 +18,7 @@ jobs:
         id: extract_branch
       
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.extract_branch.outputs.branch }}
           retention-days: 30
