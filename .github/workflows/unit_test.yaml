@@ -18,11 +18,10 @@ jobs:
         id: extract_branch
       
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.extract_branch.outputs.branch }}
           retention-days: 30
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           path: ./build
       
   deploy:
