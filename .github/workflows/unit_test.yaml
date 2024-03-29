@@ -16,6 +16,12 @@ jobs:
         shell: bash
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
+
+      - name: Fix permissions
+        run: |
+          chmod -c -R +rX "./build/" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
