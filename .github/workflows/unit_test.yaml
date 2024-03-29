@@ -36,6 +36,7 @@ jobs:
     permissions:
       pages: write
       id-token: write
+      pull-requests: write
 
     environment:
       name: github-pages
@@ -52,7 +53,7 @@ jobs:
 
       - name: Add Url as comment
         id: comment_to_pr
-        uses: marocchino/sticky-pull-request-comment@v2.0.0
+        uses: marocchino/sticky-pull-request-comment@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           header: Test coverage report
