@@ -1,0 +1,60 @@
+name: Tests
+on: [pull_request]
+jobs:
+  unit-tests:
+    name: Verify unit tests
+    runs-on: ubuntu-latest
+    outputs: 
+      branch: ${{ steps.extract_branch.outputs.branch }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+        
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+
+      - name: Fix permissions
+        run: |
+          chmod -c -R +rX "./build/" | while read line; do
+            echo "::warning title=Invalid file permissions automatically fixed::$line"
+          done
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: ${{ steps.extract_branch.outputs.branch }}
+          retention-days: 30
+          path: ./build
+      
+  deploy:
+    needs: unit-tests
+
+    permissions:
+      pages: write
+      id-token: write
+      pull-requests: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ needs.unit-tests.outputs.branch }}
+
+      - name: Add Url as comment
+        id: comment_to_pr
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          header: Test coverage report
+          message: "url: ${{ steps.deployment.outputs.page_url }}"
